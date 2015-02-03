@@ -42,9 +42,9 @@ class IRCClient:
 
         # Internal handlers used to get user/channel information
         self.addhandler("join", self._on_join)
-        self.addhandler("currenttopic", self._on_topic)
-        self.addhandler("topic", self._on_topic)
-        self.addhandler("topicinfo", self._on_topicinfo)
+        #self.addhandler("currenttopic", self._on_topic)
+        #self.addhandler("topic", self._on_topic)
+        #self.addhandler("topicinfo", self._on_topicinfo)
         self.addhandler("whospcrpl", self._on_whox)
         self.addhandler("whoreply", self._on_who)
         self.addhandler("whoisloggedin", self._on_whoisaccount)
