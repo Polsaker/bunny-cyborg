@@ -78,6 +78,8 @@ class Bunny(object):
                 cli.join(ev.splitd[1])
             elif ev.splitd[0] == "!part":
                 cli.part(ev.splitd[1])
+            elif ev.splitd[0] == "!quit":
+                cli.disconnect("Bye :-(")
             
             json.dump(self.config, open("config.json", 'w'), indent=2)
             
@@ -92,7 +94,6 @@ class Bunny(object):
         text = big_regex.sub("#nick", ev.arguments[0])
         text = text.replace(self.irc.nickname, "#nick")
         output = self.mc.get_response(text)  # This is what makes the bot actually learn!
-        print(output)
         if self.config['talk'] is False or self.config['channels'][ev.target]['talk'] is False:
             return
         
