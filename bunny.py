@@ -105,7 +105,7 @@ class Bunny(object):
         if output == "No possible replies could be determined.":
             return
         
-        if self.irc.nickname not in ev.arguments[0] and random.randint(0, 99) < 94:
+        if self.irc.nickname in ev.arguments[0] and random.randint(0, 99) < 94:
             cli.privmsg(ev.target, output)
             return
             
