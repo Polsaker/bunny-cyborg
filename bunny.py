@@ -80,6 +80,9 @@ class Bunny(object):
                 cli.part(ev.splitd[1])
             elif ev.splitd[0] == "!quit":
                 cli.disconnect("Bye :-(")
+            elif ev.splitd[0] == "!channels":
+                cli.privmsg(ev.target, ", ".join(list(cli.channels)))
+                    
             
             json.dump(self.config, open("config.json", 'w'), indent=2)
             
