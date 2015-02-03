@@ -103,6 +103,7 @@ class Bunny(object):
             elif ev.splitd[0] == "!join":
                 cli.join(ev.splitd[1])
             elif ev.splitd[0] == "!part":
+                del self.config['channels'][ev.splitd[1]]
                 cli.part(ev.splitd[1])
             elif ev.splitd[0] == "!quit":
                 cli.disconnect("Bye :-(")
