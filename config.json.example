@@ -1,0 +1,20 @@
+{
+  "server": "irc.freenode.net",
+  "nick": "conejo--",
+  "ident": "conejo",
+  "gecos": "Soy amigable",
+
+  "replyrate": 5,
+  "followinvites": true,
+
+  "channels": {
+    "#donger": {
+      "talk": true,
+      "replyrate": 10
+    },
+    "#otherchannel":{
+      "talk": false
+    }
+  }
+}
+    
