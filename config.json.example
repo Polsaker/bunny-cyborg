@@ -6,6 +6,8 @@
 
   "replyrate": 5,
   "followinvites": true,
+  
+  "owners": ["wikimedia/Polsaker", "unaffiliated/ravioli"],
 
   "channels": {
     "#donger": {
