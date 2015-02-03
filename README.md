@@ -1,2 +1,2 @@
-# markov-rabbit
-A markov chain IRC bot
+# bunny-cyborg
+A talking IRC bot
