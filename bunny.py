@@ -81,7 +81,6 @@ class Bunny(object):
             self.irc.join(i)
     
     def on_msg(self, cli, ev):
-        ev.target2 = ev.target
         ev.target = ev.target.lower()
         if ev.arguments[0][0] == "!":
             if ev.source2.host not in self.config['owners']:
@@ -117,7 +116,7 @@ class Bunny(object):
             return
         
         nicks = []
-        for i in cli.channels[ev.target2].users:
+        for i in cli.channels[ev.target].users:
             nicks.append(i)
         big_regex = re.compile("(?i)" + '|'.join(map(re.escape, nicks)))
         
