@@ -7,9 +7,32 @@ import time
 import logging
 import random
 import json
+from queue import Queue
+from threading import Thread
 
 logging.getLogger(None).setLevel(logging.INFO)
 logging.basicConfig()
+
+
+class Worker(Thread):
+    """Thread executing tasks from a given tasks queue"""
+    def __init__(self, tasks, boty):
+        Thread.__init__(self)
+        self.tasks = tasks
+        self.boty = boty
+        self.daemon = True
+        self.result = ""
+        self.start()
+
+    def run(self):
+        while True:
+            text = self.tasks.get()
+            try:
+                self.result = self.boty.get_response(text)
+            except Exception as e:
+                print(e)
+            finally:
+                self.tasks.task_done()
 
 
 class Bunny(object):
@@ -29,6 +52,10 @@ class Bunny(object):
         self.irc.addhandler("join", self.joining)
         self.mc = ChatBot("Conejo")
         logging.info("Connecting")
+        
+        self.bottasks = Queue(1)
+        self.ai = Worker(self.bottasks, self.mc)
+        
         self.irc.connect()
 
     
@@ -96,7 +123,10 @@ class Bunny(object):
         
         text = big_regex.sub("#nick", ev.arguments[0])
         text = text.replace(self.irc.nickname, "#nick")
-        output = self.mc.get_response(text)  # This is what makes the bot actually learn!
+        #output = self.mc.get_response(text)  # This is what makes the bot actually learn!
+        self.bottasks.put(text)
+        self.bottasks.join()
+        output = self.ai.result
         if self.config['talk'] is False or self.config['channels'][ev.target]['talk'] is False:
             return
         
@@ -113,6 +143,8 @@ class Bunny(object):
             cli.privmsg(ev.target, output)
         
 rabbit =  Bunny()
+
+
 
 while rabbit.irc.connected == True:
     time.sleep(1) # Infinite loop of awesomeness
