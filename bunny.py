@@ -6,27 +6,35 @@ import re
 import time
 import logging
 import random
-logging.getLogger(None).setLevel(logging.DEBUG)
+import json
+
+logging.getLogger(None).setLevel(logging.INFO)
 logging.basicConfig()
 
 
 class Bunny(object):
     def __init__(self):
+        logging.info("Starting")
+        self.config = json.load(open("config.json"))
+        
         self.irc = client.IRCClient("rabbit")
-        self.irc.configure(server = "iota.hira.io",
-                           nick = "conejo--",
-                           ident = "conejo--",
-                           gecos = "Soy amigable")
+        self.irc.configure(server = self.config['server'],
+                           nick = self.config['nick'],
+                           ident = self.config['ident'],
+                           gecos = self.config['gecos'])
                            
         self.irc.addhandler("pubmsg", self.on_msg)
 #        self.irc.addhandler("privmsg", self.on_msg)
         self.irc.addhandler("welcome", self.autojoin)
         self.mc = ChatBot("Conejo")
+        logging.info("Connecting")
         self.irc.connect()
 
     
     def autojoin(self, cli, ev):
-        self.irc.join("#main")
+        logging.info("Joining channels")
+        for i in self.config['channels']:
+            self.irc.join(i)
     
     def on_msg(self, cli, ev):
         if ev.arguments[0][0] == "!" or ev.arguments[0][0] == "." or ev.arguments[0][0] == "$":
@@ -37,8 +45,9 @@ class Bunny(object):
         big_regex = re.compile("(?i)" + '|'.join(map(re.escape, nicks)))
         text = big_regex.sub("#nick", ev.arguments[0])
         text = text.replace(self.irc.nickname, "#nick")
-        output = self.mc.get_response(text)[0]['text']
-        output = output.replace("#nick", ev.source)
+        output = self.mc.get_response(text)
+        print(output)
+        output = output[0]['text'].replace("#nick", ev.source)
         if output == "No possible replies could be determined.":
             return
 #        if self.irc.nickname not in ev.arguments[0] and random.randint(0, 99) < 94:
