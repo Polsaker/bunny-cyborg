@@ -269,15 +269,8 @@ class pyborg:
             try:
                 self.autosave = threading.Timer(to_sec("125m"), self.save_all)
                 self.autosave.start()
-                self.autopurge = threading.Timer(to_sec("5h"), self.auto_optimise)
-                self.autopurge.start()
-                self.autorebuild = threading.Timer(to_sec("71h"), self.auto_rebuild)
-                self.autorebuild.start()
-                timers_started = True
             except SystemExit as e:
                 self.autosave.cancel()
-                self.autopurge.cancel()
-                self.autorebuild.cancel()
 
         if dbread("hello") is None:
             dbwrite("hello", "hi #nick")
