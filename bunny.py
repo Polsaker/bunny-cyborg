@@ -103,7 +103,7 @@ class Bunny(object):
         text = big_regex.sub("#nick", ev.arguments[0])
         text = text.replace(self.irc.nickname, "#nick")
         
-        replyrate = self.config['channels'][ev.target]['replyrate'] if cli.nickname in ev.arguments[0] else 99
+        replyrate = self.config['channels'][ev.target]['replyrate'] if cli.nickname not in ev.arguments[0] else 99
         
         self.mc.process_msg(self, text, 
                     replyrate,
