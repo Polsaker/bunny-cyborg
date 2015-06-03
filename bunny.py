@@ -9,6 +9,7 @@ import random
 import json
 from queue import Queue
 from threading import Thread
+import traceback
 
 logging.getLogger(None).setLevel(logging.INFO)
 logging.basicConfig()
@@ -31,6 +32,17 @@ class Worker(Thread):
                 self.result = self.boty.get_response(text)
             except Exception as e:
                 print(e)
+                print(traceback.format_exc())
+                conversation = [
+                    "Hello",
+                    "Hi there!",
+                    "How are you doing?",
+                    "I'm doing great.",
+                    "That is good to hear",
+                    "Thank you.",
+                    "You're welcome."
+                ]
+                self.boty.train(conversation)
             finally:
                 self.tasks.task_done()
 
@@ -50,7 +62,9 @@ class Bunny(object):
         self.irc.addhandler("welcome", self.autojoin)
         self.irc.addhandler("invite", self.invited)
         self.irc.addhandler("join", self.joining)
-        self.mc = ChatBot("Conejo")
+        self.mc = ChatBot("Conejo",
+            storage_adapter="chatterbot.adapters.storage.JsonDatabaseAdapter",
+            database="./my.fucking.brain.db")
         logging.info("Connecting")
         
         self.bottasks = Queue(1)
@@ -129,7 +143,6 @@ class Bunny(object):
         output = self.ai.result
         if self.config['talk'] is False or self.config['channels'][ev.target]['talk'] is False:
             return
-        
         output = output.replace("#nick", ev.source)
         
         if output == "No possible replies could be determined.":
