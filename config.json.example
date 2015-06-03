@@ -4,6 +4,7 @@
   "ident": "conejo",
   "gecos": "Soy amigable",
 
+  "talk": true,
   "replyrate": 5,
   "followinvites": true,
   
