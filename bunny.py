@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from irc import client
-from chatterbot import ChatBot
+import pyborg
 import re
 import time
 import logging
@@ -13,38 +13,6 @@ import traceback
 
 logging.getLogger(None).setLevel(logging.INFO)
 logging.basicConfig()
-
-
-class Worker(Thread):
-    """Thread executing tasks from a given tasks queue"""
-    def __init__(self, tasks, boty):
-        Thread.__init__(self)
-        self.tasks = tasks
-        self.boty = boty
-        self.daemon = True
-        self.result = ""
-        self.start()
-
-    def run(self):
-        while True:
-            text = self.tasks.get()
-            try:
-                self.result = self.boty.get_response(text)
-            except Exception as e:
-                print(e)
-                print(traceback.format_exc())
-                conversation = [
-                    "Hello",
-                    "Hi there!",
-                    "How are you doing?",
-                    "I'm doing great.",
-                    "That is good to hear",
-                    "Thank you.",
-                    "You're welcome."
-                ]
-                self.boty.train(conversation)
-            finally:
-                self.tasks.task_done()
 
 
 class Bunny(object):
@@ -62,14 +30,9 @@ class Bunny(object):
         self.irc.addhandler("welcome", self.autojoin)
         self.irc.addhandler("invite", self.invited)
         self.irc.addhandler("join", self.joining)
-        self.mc = ChatBot("Conejo",
-            storage_adapter="chatterbot.adapters.storage.JsonDatabaseAdapter",
-            database="./my.fucking.brain.db")
+        self.mc = pyborg.pyborg()
         logging.info("Connecting")
-        
-        self.bottasks = Queue(1)
-        self.ai = Worker(self.bottasks, self.mc)
-        
+                
         self.irc.connect()
 
     
@@ -96,9 +59,11 @@ class Bunny(object):
     
     def on_msg(self, cli, ev):
         ev.target = ev.target.lower()
+        if ev.source2.host not in self.config['owners']:
+            owner = 0
+        else:
+            owner = 1
         if ev.arguments[0][0] == "!":
-            if ev.source2.host not in self.config['owners']:
-                return
             if ev.splitd[0] == "!shutup":
                 self.config['channels'][ev.target]['talk'] = False
                 cli.privmsg(ev.target, "Ok :-(")
@@ -127,8 +92,8 @@ class Bunny(object):
             
             json.dump(self.config, open("config.json", 'w'), indent=2)
             
-        if ev.arguments[0][0] == "!" or ev.arguments[0][0] == "." or ev.arguments[0][0] == "$":
-            return
+        #if ev.arguments[0][0] == "!" or ev.arguments[0][0] == "." or ev.arguments[0][0] == "$":
+        #    return
         
         nicks = []
         for i in cli.channels[ev.target].users:
@@ -137,23 +102,17 @@ class Bunny(object):
         
         text = big_regex.sub("#nick", ev.arguments[0])
         text = text.replace(self.irc.nickname, "#nick")
-        #output = self.mc.get_response(text)  # This is what makes the bot actually learn!
-        self.bottasks.put(text)
-        self.bottasks.join()
-        output = self.ai.result
-        if self.config['talk'] is False or self.config['channels'][ev.target]['talk'] is False:
-            return
-        output = output.replace("#nick", ev.source)
-        
-        if output == "No possible replies could be determined.":
-            return
-        
-        if self.irc.nickname in ev.arguments[0] and random.randint(0, 99) < 94:
-            cli.privmsg(ev.target, output)
-            return
-            
-        if random.randint(0, 99) < self.config['channels'][ev.target]['replyrate']:
-            cli.privmsg(ev.target, output)
+
+        self.mc.process_msg(self, text, 
+                    self.config['channels'][ev.target]['replyrate'],
+                    1,  # TODO (learn argument)!
+                    (text, ev.source, ev.target, None, None),
+                    owner, 
+                    self.config['talk'] or self.config['channels'][ev.target]['talk'])
+
+    
+    def output(self, message, args):
+        self.irc.privmsg(args[2], message.replace("#nick", args[1]))
         
 rabbit =  Bunny()
 

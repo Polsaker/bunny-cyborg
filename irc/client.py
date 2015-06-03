@@ -71,7 +71,7 @@ class IRCClient:
         self.logger.info("Connecting to {0}:{1}".format(self.server, self.port))
         
         try:
-            self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.socket = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
             self.socket.connect((self.server, self.port))
         except socket.error as err:
             self.logger.error("Couldn't connect to {0}:{1}: {2}"
