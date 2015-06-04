@@ -63,7 +63,7 @@ class Bunny(object):
             owner = 0
         else:
             owner = 1
-        if ev.arguments[0][0] == "!":
+        if ev.arguments[0][0] == "!" and owner == 1:
             if ev.splitd[0] == "!shutup":
                 self.config['channels'][ev.target]['talk'] = False
                 cli.privmsg(ev.target, "Ok :-(")
