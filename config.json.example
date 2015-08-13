@@ -4,7 +4,7 @@
   "ident": "conejo",
   "gecos": "Soy amigable",
   "password": "",
-  "sasl": True
+  "sasl": False
   "sasl_username":
   "sasl_password":
 
