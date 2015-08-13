@@ -25,13 +25,7 @@ class Bunny(object):
         self.irc.configure(server = self.config['server'],
                            nick = self.config['nick'],
                            ident = self.config['ident'],
-                           gecos = self.config['gecos'],
-                           sasl = self.config['sasl'],
-                           if sasl = True:
-                               sasl_username = self.config['sasl_username']
-                               sasl_password = self.config['sasl_password']
-                           else:
-                               pass
+                           gecos = self.config['gecos'])
                            
         self.irc.addhandler("pubmsg", self.on_msg)
         self.irc.addhandler("welcome", self.autojoin)
@@ -41,7 +35,9 @@ class Bunny(object):
         logging.info("Connecting")
         
         # Hack to send the server password. This gets queued but not sent until we connect
-        if sasl = True:
+        if self.config['sasl'] == True:
+            sasl_username = self.config['sasl_username']
+            sasl_password = self.config['sasl_password']
             self.irc.send("CAP REQ :sasl")
             self.irc.send("AUTHENTICATE PLAIN")
             sasldatastr= "%s\0%s\0%s" % (account_username, account_username, account_password)
