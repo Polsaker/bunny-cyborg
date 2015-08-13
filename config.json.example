@@ -3,6 +3,7 @@
   "nick": "conejo--",
   "ident": "conejo",
   "gecos": "Soy amigable",
+  "password": "",
 
   "talk": true,
   "replyrate": 5,
