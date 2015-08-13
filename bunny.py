@@ -15,33 +15,32 @@ import traceback
 logging.getLogger(None).setLevel(logging.INFO)
 logging.basicConfig()
 
-
 class Bunny(object):
     def __init__(self):
         logging.info("Starting")
         self.config = json.load(open("config.json"))
-        
+
         self.irc = client.IRCClient("rabbit")
         self.irc.configure(server = self.config['server'],
                            nick = self.config['nick'],
                            ident = self.config['ident'],
                            gecos = self.config['gecos'])
-                           
+
         self.irc.addhandler("pubmsg", self.on_msg)
         self.irc.addhandler("welcome", self.autojoin)
         self.irc.addhandler("invite", self.invited)
         self.irc.addhandler("join", self.joining)
         self.mc = pyborg.pyborg()
         logging.info("Connecting")
-        
+
         # Hack to send the server password. This gets queued but not sent until we connect
-        if self.config['sasl'] == True:
+        if self.config['sasl'] == "True":
             sasl_username = self.config['sasl_username']
             sasl_password = self.config['sasl_password']
             self.irc.send("CAP REQ :sasl")
             self.irc.send("AUTHENTICATE PLAIN")
-            sasldatastr= "%s\0%s\0%s" % (account_username, account_username, account_password)
-            self.irc.send("AUTHENTICATE " + base64.b64encode(datastr.encode()).decode())
+            sasldatastr= "%s\0%s\0%s" % (sasl_username, sasl_username, sasl_password)
+            self.irc.send("AUTHENTICATE " + base64.b64encode(sasldatastr.encode()).decode())
             self.irc.send("CAP END")
         else:
             pass
@@ -50,7 +49,6 @@ class Bunny(object):
         else:
             pass
         self.irc.connect()
-
     
     def invited(self, cli, ev):
         if self.config['followinvites']:
