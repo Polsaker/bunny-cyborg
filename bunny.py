@@ -7,6 +7,7 @@ import time
 import logging
 import random
 import json
+import base64
 from queue import Queue
 from threading import Thread
 import traceback
@@ -24,7 +25,13 @@ class Bunny(object):
         self.irc.configure(server = self.config['server'],
                            nick = self.config['nick'],
                            ident = self.config['ident'],
-                           gecos = self.config['gecos'])
+                           gecos = self.config['gecos'],
+                           sasl = self.config['sasl'],
+                           if sasl = True:
+                               sasl_username = self.config['sasl_username']
+                               sasl_password = self.config['sasl_password']
+                           else:
+                               pass
                            
         self.irc.addhandler("pubmsg", self.on_msg)
         self.irc.addhandler("welcome", self.autojoin)
@@ -34,7 +41,18 @@ class Bunny(object):
         logging.info("Connecting")
         
         # Hack to send the server password. This gets queued but not sent until we connect
-        self.irc.send("PASS " + self.config['password'])
+        if sasl = True:
+            self.irc.send("CAP REQ :sasl")
+            self.irc.send("AUTHENTICATE PLAIN")
+            sasldatastr= "%s\0%s\0%s" % (account_username, account_username, account_password)
+            self.irc.send("AUTHENTICATE " + base64.b64encode(datastr.encode()).decode())
+            self.irc.send("CAP END")
+        else:
+            pass
+        if len(self.config['password']) != 0:
+            self.irc.send("PASS " + self.config['password'])
+        else:
+            pass
         self.irc.connect()
 
     
