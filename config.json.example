@@ -4,9 +4,9 @@
   "ident": "conejo",
   "gecos": "Soy amigable",
   "password": "",
-  "sasl": False
-  "sasl_username":
-  "sasl_password":
+  "sasl": "False",
+  "sasl_username": "",
+  "sasl_password": "",
 
   "talk": true,
   "replyrate": 5,
