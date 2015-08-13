@@ -32,7 +32,9 @@ class Bunny(object):
         self.irc.addhandler("join", self.joining)
         self.mc = pyborg.pyborg()
         logging.info("Connecting")
-                
+        
+        # Hack to send the server password. This gets queued but not sent until we connect
+        self.irc.send("PASS " + self.config['password'])
         self.irc.connect()
 
     
