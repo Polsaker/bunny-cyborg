@@ -72,7 +72,7 @@ class IRCClient:
         
         try:
             if "::" in self.server:
-              self.socket = socket.socket(socket.AF_INETv6, socket.SOCK_STREAM)
+              self.socket = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
               self.socket.connect((self.server, self.port))
             else:
               self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
