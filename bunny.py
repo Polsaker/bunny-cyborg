@@ -34,7 +34,7 @@ class Bunny(object):
         logging.info("Connecting")
 
         # Hack to send the server password. This gets queued but not sent until we connect
-        if self.config['sasl'] == True:
+        if self.config['sasl']:
             sasl_username = self.config['sasl_username']
             sasl_password = self.config['sasl_password']
             self.irc.send("CAP REQ :sasl")
